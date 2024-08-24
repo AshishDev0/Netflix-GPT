@@ -3,14 +3,13 @@ import Header from "./Header";
 import { validate } from "../utils/validate";
 import { auth } from "../utils/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice"
+import { BACKGROUND_URL, PROFILE_URL } from "../utils/constants";
 
 const Login = () => {
     const [isSignInForm, setIsSignInForm] = useState(true);
     const [errorMsg, setErrorMsg] = useState(null);
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const email = useRef(null);
@@ -43,19 +42,17 @@ const Login = () => {
 
                     updateProfile(auth.currentUser, {
                         displayName: name.current.value, 
-                        photoURL: "https://cdn.pixabay.com/photo/2016/03/31/19/58/avatar-1295430_1280.png"
+                        photoURL: PROFILE_URL
                     }).then(() => {
                         const { uid, email, displayName, photoURL } = auth.currentUser;
                         dispatch(
                             addUser({ 
                                 uid: uid, 
-                                email: email, 
+                                email: email,
                                 displayName: displayName, 
                                 photoURL: photoURL 
                             }
                         ))
-
-                        navigate("/browse")
 
                     }).catch((error) => {
 
@@ -67,11 +64,14 @@ const Login = () => {
                     // ..
                 });
         } else {
-            signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+            signInWithEmailAndPassword(
+                auth, 
+                email.current.value, 
+                password.current.value
+            )
                 .then((userCredential) => {
                     // Signed in 
                     const user = userCredential.user;
-                    navigate("/browse")
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -85,7 +85,7 @@ const Login = () => {
         <div>
             <Header />
             <div style={{
-                backgroundImage: "url(" + "https://assets.nflxext.com/ffe/siteui/vlv3/b2c3e95b-b7b5-4bb7-a883-f4bfc7472fb7/19fc1a4c-82db-4481-ad08-3a1dffbb8c39/IN-en-20240805-POP_SIGNUP_TWO_WEEKS-perspective_WEB_24a485f6-1820-42be-9b60-1b066f1eb869_large.jpg" + ")"
+                backgroundImage: "url(" + BACKGROUND_URL + ")"
             }} className="bg-no-repeat bg-center bg-cover min-h-dvh flex items-center justify-center brightness-75">
                 <form className="w-[28%] px-16 py-16 rounded" 
                     style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
